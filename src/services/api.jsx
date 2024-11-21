@@ -13,9 +13,10 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export const searchRecipes = async (query) => {
+export const searchRecipes = async (query, page = 1, limit = 9) => {
+  const offset = (page - 1) * limit;
   const response = await fetch(
-    `${BASE_URL}/complexSearch?apiKey=${API_KEY}&query=${query}&addRecipeInformation=true`
+    `${BASE_URL}/complexSearch?apiKey=${API_KEY}&query=${query}&addRecipeInformation=true&offset=${offset}&number=${limit}`
   );
   if (!response.ok) {
     throw new Error('Failed to fetch recipes');

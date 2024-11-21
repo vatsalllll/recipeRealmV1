@@ -3,22 +3,33 @@ import { useQuery } from '@tanstack/react-query';
 import { searchRecipes } from '../services/api';
 import RecipeCard from '../components/RecipeCard';
 import SearchBar from '../components/SearchBar';
+import Pagination from '../components/Pagination';
 
 const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const recipesPerPage = 9;
   
   const { data, isLoading, error } = useQuery({
-    queryKey: ['recipes', searchTerm],
-    queryFn: () => searchRecipes(searchTerm),
+    queryKey: ['recipes', searchTerm, currentPage],
+    queryFn: () => searchRecipes(searchTerm, currentPage, recipesPerPage),
     enabled: !!searchTerm,
   });
 
   const handleSearch = (query) => {
     setSearchTerm(query);
+    setCurrentPage(1);
   };
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const totalPages = data ? Math.ceil(data.totalResults / recipesPerPage) : 0;
+
   return (
-    <div>
+    <div className=''>
       <SearchBar onSearch={handleSearch} />
       
       {!searchTerm && (
@@ -45,6 +56,14 @@ const Home = () => {
           <RecipeCard key={recipe.id} recipe={recipe} />
         ))}
       </div>
+      
+      {data?.results?.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 };
