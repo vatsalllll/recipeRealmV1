@@ -4,16 +4,18 @@ import { searchRecipes } from '../services/api';
 import RecipeCard from '../components/RecipeCard';
 import SearchBar from '../components/SearchBar';
 import Pagination from '../components/Pagination';
+import FilterBar from '../components/FilterBar';
 
 const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState({});
   const recipesPerPage = 9;
   
   const { data, isLoading, error } = useQuery({
-    queryKey: ['recipes', searchTerm, currentPage],
-    queryFn: () => searchRecipes(searchTerm, currentPage, recipesPerPage),
-    enabled: !!searchTerm,
+    queryKey: ['recipes', searchTerm, currentPage, filters],
+    queryFn: () => searchRecipes(searchTerm, currentPage, recipesPerPage, filters),
+    enabled: true,
   });
 
   const handleSearch = (query) => {
@@ -26,16 +28,26 @@ const Home = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleFilterChange = (filterType, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+    setCurrentPage(1);
+  };
+
   const totalPages = data ? Math.ceil(data.totalResults / recipesPerPage) : 0;
 
   return (
     <div className=''>
-      <SearchBar onSearch={handleSearch} />
+      <SearchBar onSearch={handleSearch}>
+        <FilterBar onFilterChange={handleFilterChange} />
+      </SearchBar>
       
-      {!searchTerm && (
+      {!searchTerm && !Object.keys(filters).length && (
         <div className="text-center py-12">
           <h2 className="text-2xl font-semibold text-gray-800 mb-2">Welcome to RecipeRealm</h2>
-          <p className="text-gray-600">Search for your favorite recipes above</p>
+          <p className="text-gray-600">Search for your favorite recipes or use filters to browse</p>
         </div>
       )}
       

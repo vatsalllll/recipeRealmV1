@@ -1,16 +1,17 @@
-import React from "react";
-import { useState } from "react";
-const SearchBar = ({ onSearch }) => {
-    const [query, setQuery] = useState('');
-  
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      onSearch(query);
-    };
-  
-    return (
-      <form onSubmit={handleSubmit} className="max-w-2xl mx-auto mb-8">
-        <div className="flex gap-2">
+import React, { useState } from "react";
+
+const SearchBar = ({ onSearch, children }) => {
+  const [query, setQuery] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSearch(query);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="max-w-4xl mx-auto mb-8">
+      <div className="flex items-center gap-2">
+        <div className="flex-1 flex gap-2">
           <input
             type="text"
             value={query}
@@ -25,9 +26,11 @@ const SearchBar = ({ onSearch }) => {
             Search
           </button>
         </div>
-      </form>
-    );
-  };
-  
-  export default SearchBar;
+        {children}
+      </div>
+    </form>
+  );
+};
+
+export default SearchBar;
   
